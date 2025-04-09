@@ -4,7 +4,8 @@ import cors from "cors";
 import path from "path";
 import mongoose from "mongoose";
 import { ApiError } from "./utils/ApiError.js";
-import { router } from "./router/index.js";
+import { authRouter } from "./router/auth-route.js";
+import { appRouter } from "./router/app-route.js";
 const app = express();
 
 const corsOptions = {
@@ -17,8 +18,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), "public")));
 
-app.use("/api", router.auth);
-app.use("/api", router.app);
+app.use("/api/auth", authRouter);
+app.use("/api/app", appRouter);
 
 mongoose
   .connect(
@@ -35,9 +36,11 @@ mongoose
 
 app.use((err, __, res, _) => {
   if (!(err instanceof ApiError)) {
-    return res.status(500).json({ error: "Something went wrong" });
+    return res
+      .status(500)
+      .json({ success: false, error: "Something went wrong" });
   }
   return res
     .status(err.status || 500)
-    .json({ error: err.message || "Something went wrong" });
+    .json({ success: false, error: err.message || "Something went wrong" });
 });

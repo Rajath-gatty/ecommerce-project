@@ -12,7 +12,10 @@ const productSchema = new mongoose.Schema(
     },
     discountedPrice: Number,
     rating: Number,
-    company: String,
+    company: {
+      type: String,
+      required: true,
+    },
     category: {
       type: String,
       required: true,
