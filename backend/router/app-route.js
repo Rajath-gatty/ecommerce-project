@@ -3,6 +3,7 @@ import * as AppController from "../controller/app-controller.js";
 import { v4 } from "uuid";
 import multer from "multer";
 import path from "path";
+import { isAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -36,5 +37,11 @@ const upload = multer({ storage: storage, fileFilter });
 
 router.post("/products", AppController.getProducts);
 router.post("/product", upload.single("image"), AppController.createProduct);
+
+router.get("/products/featured", AppController.getFeatured);
+router.get("/cart", isAuth, AppController.getCart);
+router.post("/cart/add", isAuth, AppController.addCart);
+router.delete("/cart/remove/:cartId", isAuth, AppController.removeFromCart);
+// router.post("/cart/delete", AppController.getCart);
 
 export { router as appRouter };

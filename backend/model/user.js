@@ -19,7 +19,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    isAdmin: String,
+    isAdmin: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     cart: [
       {
         quantity: Number,
@@ -36,16 +40,5 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-userSchema.methods.generateAccessToken = function () {
-  const token = jwt.sign(
-    { email: this.email, _id: this._id },
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: "5 days",
-    }
-  );
-  return token;
-};
 
 export const User = mongoose.model("User", userSchema);

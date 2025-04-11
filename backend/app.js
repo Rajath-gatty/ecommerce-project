@@ -35,6 +35,7 @@ mongoose
   });
 
 app.use((err, __, res, _) => {
+  console.log(err);
   if (!(err instanceof ApiError)) {
     return res
       .status(500)
