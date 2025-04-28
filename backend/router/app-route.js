@@ -36,9 +36,11 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage: storage, fileFilter });
 
 router.post("/products", AppController.getProducts);
+router.get("/product/featured", AppController.getLatestProducts);
+router.get("/product/new-arrival", AppController.getFeatured);
+router.get("/products/:productId", AppController.getSingleProduct);
 router.post("/product", upload.single("image"), AppController.createProduct);
 
-router.get("/products/featured", AppController.getFeatured);
 router.get("/cart", isAuth, AppController.getCart);
 router.post("/cart/add", isAuth, AppController.addCart);
 router.delete("/cart/remove/:cartId", isAuth, AppController.removeFromCart);

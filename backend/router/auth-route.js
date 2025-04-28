@@ -1,6 +1,7 @@
 import express from "express";
 import { z } from "zod";
 import * as AuthController from "../controller/auth-controller.js";
+import { isAuth } from "../middleware/auth.js";
 const router = express.Router();
 
 // Validation schemas
@@ -36,5 +37,7 @@ const validate = (schema) => (req, res, next) => {
 router.post("/login", validate(loginSchema), AuthController.login);
 
 router.post("/sign-in", validate(signupSchema), AuthController.signUp);
+
+router.get("/me", isAuth, AuthController.me);
 
 export { router as authRouter };

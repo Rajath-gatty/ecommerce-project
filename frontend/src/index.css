@@ -213,12 +213,27 @@ body {
   min-height: 250px;
   padding: 10px 12px;
   border: 1px solid #cce7d0;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 25px;
   cursor: pointer;
   box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.2);
   margin: 15px 0;
   transition: 0.2s ease;
   position: relative;
+  text-decoration: none;
+  z-index: 10;
+  overflow: hidden;
+}
+
+#products1 .pro::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(6px);
+  z-index: -1;
 }
 
 #products1 .pro:hover {
@@ -820,6 +835,34 @@ footer .copyright {
   color: #000;
 }
 
+.loader-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5rem;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 50px;
+  padding: 8px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #25b09b;
+  --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
 /*cart*/
 
 /*Account*/
@@ -907,11 +950,11 @@ form .btn:focus {
 }
 
 #LoginForm {
-  left: -300px;
+  /* left: -300px; */
 }
 
 #RegForm {
-  left: 0;
+  /* left: 0; */
 }
 
 form a {
@@ -921,13 +964,24 @@ form a {
 
 #Indicator {
   width: 100px;
+  margin: auto;
   border: none;
   background: #088178;
   border-radius: 50px;
   height: 4px;
   margin-top: 7px;
-  transform: translateX(100px);
-  transition: transform 1s;
+}
+
+.price-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.price-container > span {
+  font-size: 24px;
+  font-weight: 600;
+  text-decoration: line-through;
 }
 
 @media (max-width: 799px) {
@@ -1232,6 +1286,79 @@ form a {
 
   /*account*/
   .form-container {
-    height: 360px;
+    height: 600px;
   }
+}
+
+/* Admin container */
+.admin-container {
+  max-width: 850px;
+  margin: 0 auto;
+  background-color: #e3e6f3;
+  border-radius: 0.35rem;
+  margin-top: 1rem;
+}
+
+.admin-container h3 {
+  padding: 0.75rem;
+  font-size: 24px;
+  color: #088178;
+  margin: 0rem 0.5rem;
+}
+
+form {
+  padding: 0rem 1.5rem 1.5rem 1.5rem;
+}
+
+.admin-container form input,
+.admin-container form select,
+.admin-container form textarea {
+  padding: 0.5rem;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.25rem;
+  margin: 0.35rem 0;
+  border: 1px solid #bdbdbd;
+}
+
+.admin-container form > div {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.admin-container form div {
+  width: 100%;
+}
+
+.admin-container form label {
+  font-size: 12px;
+}
+
+.admin-container .admin-checkbox input {
+  width: 20px;
+  height: 20px;
+}
+
+.admin-container .admin-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.admin-container .admin-submit {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 1rem;
+  background-color: #25b09b;
+  color: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-container .error {
+  color: rgb(221, 8, 8);
+  display: block;
+  font-size: 12px;
 }

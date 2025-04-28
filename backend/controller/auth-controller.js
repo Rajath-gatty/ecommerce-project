@@ -67,7 +67,11 @@ export const login = async (req, res) => {
     }
 
     // Find user by email
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).populate({
+      path: "cart.productId", // adjust path as per your schema
+      select: "-__v", // exclude unwanted fields
+    });
+    console.log(user);
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -107,6 +111,45 @@ export const login = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Something went wrong during login",
+      error: error.message,
+    });
+  }
+};
+
+// Create a me controller that returns user data along with populated cart
+export const me = async (req, res) => {
+  try {
+    // req.user should be set by authentication middleware
+    const userId = req.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    // Populate cart (assuming 'cart' is a field in User schema and references products)
+    const user = await User.findById(userId).select("-password").populate({
+      path: "cart.productId", // adjust path as per your schema
+      select: "-__v", // exclude unwanted fields
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("Me controller error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong fetching user data",
       error: error.message,
     });
   }

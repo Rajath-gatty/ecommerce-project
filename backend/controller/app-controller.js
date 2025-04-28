@@ -85,7 +85,31 @@ export const createProduct = async (req, res, next) => {
 
 export const getFeatured = async (req, res, next) => {
   try {
-    const result = await Product.find({ isFeatured: true }).limit(10);
+    const result = await Product.find({ isFeatured: true })
+      .sort({ createdAt: -1 })
+      .limit(10);
+    res.status(200).json({ success: true, data: result ?? [] });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getLatestProducts = async (req, res, next) => {
+  try {
+    const result = await Product.find().sort({ createdAt: -1 }).limit(10);
+    res.status(200).json({ success: true, data: result ?? [] });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getSingleProduct = async (req, res, next) => {
+  const { productId } = req.params;
+  if (!productId) {
+    throw ApiError(422, "No product id provided");
+  }
+  try {
+    const result = await Product.findById(productId);
     res.status(200).json({ success: true, data: result ?? [] });
   } catch (err) {
     next(err);
@@ -169,6 +193,105 @@ export const removeFromCart = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Item removed from cart",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Increment cart item quantity
+export const incrementCartItemQuantity = async (req, res, next) => {
+  const { productId } = req.body;
+  const userId = req.id;
+  try {
+    if (!productId) {
+      throw new ApiError(422, "No product id provided");
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+    const cartItem = user.cart.find(
+      (item) => item.productId.toString() === productId
+    );
+    if (!cartItem) {
+      throw new ApiError(404, "Cart item not found");
+    }
+    cartItem.quantity += 1;
+    await user.save();
+    await user.populate("cart.productId");
+    res.status(200).json({ success: true, data: user.cart });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Decrement cart item quantity
+export const decrementCartItemQuantity = async (req, res, next) => {
+  const { productId } = req.body;
+  const userId = req.id;
+  try {
+    if (!productId) {
+      throw new ApiError(422, "No product id provided");
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+    const cartItem = user.cart.find(
+      (item) => item.productId.toString() === productId
+    );
+    if (!cartItem) {
+      throw new ApiError(404, "Cart item not found");
+    }
+    if (cartItem.quantity > 1) {
+      cartItem.quantity -= 1;
+      await user.save();
+      await user.populate("cart.productId");
+      res.status(200).json({ success: true, data: user.cart });
+    } else {
+      // Optionally, remove item if quantity reaches 0
+      user.cart = user.cart.filter(
+        (item) => item.productId.toString() !== productId
+      );
+      await user.save();
+      await user.populate("cart.productId");
+      res.status(200).json({
+        success: true,
+        data: user.cart,
+        message: "Item removed from cart",
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Remove cart item by productId
+export const removeCartItemByProductId = async (req, res, next) => {
+  const { productId } = req.body;
+  const userId = req.id;
+  try {
+    if (!productId) {
+      throw new ApiError(422, "No product id provided");
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+    const initialCartLength = user.cart.length;
+    user.cart = user.cart.filter(
+      (item) => item.productId.toString() !== productId
+    );
+    if (user.cart.length === initialCartLength) {
+      throw new ApiError(404, "Cart item not found");
+    }
+    await user.save();
+    await user.populate("cart.productId");
+    res.status(200).json({
+      success: true,
+      data: user.cart,
+      message: "Item removed from cart by productId",
     });
   } catch (err) {
     next(err);
